@@ -5,7 +5,6 @@ import os
 
 app = Flask(__name__)
 
-# HTMLテンプレート
 html_template = """
 <!DOCTYPE html>
 <html>
@@ -40,7 +39,7 @@ html_template = """
             })
             .then(response => response.json())
             .then(data => {
-                console.log(data);  // レスポンス確認
+                console.log(data);
                 document.getElementById("demo").innerHTML = data.message;
                 if (data.status === "success") {
                     window.location.href = "/map?_=" + new Date().getTime();
@@ -77,30 +76,33 @@ def home():
 def location():
     try:
         data = request.json
+        if not data or 'lat' not in data or 'lon' not in data:
+            return jsonify({"status": "error", "message": "Invalid JSON data, 'lat' and 'lon' are required"})
+
         lat = data.get("lat")
         lon = data.get("lon")
 
-        with open("location.json", "w") as f:
+        file_path = os.path.join(os.getcwd(), "location.json")
+        with open(file_path, "w") as f:
             json.dump({"latitude": lat, "longitude": lon}, f)
 
         script_path = 'new now.py'
         result = subprocess.run(['python', script_path], capture_output=True, text=True)
 
         if result.returncode != 0:
-            app.logger.error(f"Script error: {result.stderr}")
-            return jsonify({"status": "error", "message": "Script execution failed.", "details": result.stderr})
+            app.logger.error(f"Script error: {result.stderr or result.stdout}")
+            return jsonify({"status": "error", "message": "Script execution failed.", "details": result.stderr or result.stdout})
 
         app.logger.info(result.stdout)
-        return jsonify({"status": "success", "message": "Script executed successfully and map generated."})
+        return jsonify({"status": "success", "message": "位置情報が保存されました。マップを表示します。"})
+
     except Exception as e:
+        app.logger.error(f"Error occurred: {str(e)}")
         return jsonify({"status": "error", "message": f"Error occurred: {str(e)}"})
 
 @app.route("/map")
 def serve_map():
     try:
-        file_path = os.path.join('static', 'map_with_path.html')
-        if not os.path.exists(file_path):
-            return "マップが生成されていません。スクリプトを確認してください。"
         return send_from_directory('static', 'map_with_path.html')
     except Exception as e:
         app.logger.error(f"Error serving map: {str(e)}")
