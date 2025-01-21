@@ -10,6 +10,47 @@ html_template = """
 <html>
 <head>
     <title>位置情報を取得</title>
+    
+    <style>
+        /* ボディ全体のフォントサイズと中央寄せ */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 40px; /* タイトルを大きく */
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+            font-size: 32px; /* 説明文のフォントサイズ */
+            color: red;
+            margin-bottom: 30px;
+        }
+
+        #demo {
+            font-size: 18px; /* 結果表示用テキストを大きく */
+            margin-top: 20px;
+        }
+
+        /* ボタンのスタイル */
+        button {
+            font-size: 24px; /* ボタン内の文字を大きく */
+            padding: 15px 30px; /* ボタン全体を大きく */
+            margin-top: 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3; /* ホバー時の色変更 */
+        }
+    </style>
 </head>
 <body>
     <h1>位置情報を取得</h1>
